@@ -1,5 +1,5 @@
 # ==============================================================================
-# Visual Discrimination & Learning Criterion in Black-Handed Spider Monkeys
+# VISUAL DISCRIMINATION PERFORMANCE OF 3D OBJECTS
 # Author: Mar Figuerola Folch
 # ==============================================================================
 
