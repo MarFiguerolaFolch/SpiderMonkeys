@@ -1,6 +1,5 @@
 # ==============================================================================
-# SPIDER MONKEY 1ST TRIAL BINOMIAL ANALYSIS
-# Visual Discrimination Performance vs. Chance Level (50%)
+# FIRST TRIAL PERFORMANCE AFTER RETENTION INTERVAL
 # Author: Mar Figuerola Folch
 # ==============================================================================
 
