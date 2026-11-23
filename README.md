@@ -25,7 +25,7 @@ Analyses visual discrimination performance and the number of sessions required t
 Analyses first-trial performance after the retention intervals.
 
 3. Individual differences (03_individual_differences_learning_speed.R)
-Analyses interindividual differences in learning speed using a linear mixed-effects model fitted with restricted maximum likelihood estimation. Interindividual variation in test performance can arise from factors such as age, sex, sensory capacities, and motivation  
+Analyses interindividual differences in learning speed using a linear mixed-effects model fitted with restricted maximum likelihood estimation. Interindividual variation in test performance can arise from factors such as age, sex, sensory capacities, and motivation.  
 
 The original Excel datasets are not included in this repository.
 
