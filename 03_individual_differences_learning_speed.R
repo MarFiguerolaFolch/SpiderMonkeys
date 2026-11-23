@@ -1,5 +1,5 @@
 # ==============================================================================
-# SPIDER MONKEY VISUAL DISCRIMINATION: INDIVIDUAL DIFFERENCES IN LEARNING SPEED
+# INDIVIDUAL DIFFERENCES IN LEARNING SPEED
 # Linear mixed model: Sessions ~ Monkey + (1 | Pair_number)
 # ==============================================================================
 
