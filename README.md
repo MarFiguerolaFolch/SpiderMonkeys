@@ -21,8 +21,11 @@ Analysis scripts
 1. Visual discrimination (01_visual_discrimination.R)
 Analyses visual discrimination performance and the number of sessions required to reach the learning criterion.
 
-3. Long-term memory: first-trial after retention interval (02_memory_first_trial.R)
+2. Long-term memory: first-trial after retention interval (02_memory_first_trial.R)
 Analyses first-trial performance after the retention intervals.
+
+3. Individual differences (03_individual_differences_learning_speed.R)
+Analyses interindividual differences in learning speed using a linear mixed-effects model fitted with restricted maximum likelihood estimation. Interindividual variation in test performance can arise from factors such as age, sex, sensory capacities, and motivation  
 
 The original Excel datasets are not included in this repository.
 
