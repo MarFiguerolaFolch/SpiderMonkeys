@@ -1,5 +1,4 @@
 # ==============================================================================
-# PRIMATE COGNITION DATA ANALYSIS SCRIPT
 # Visual Discrimination & Learning Criterion in Black-Handed Spider Monkeys
 # Author: Mar Figuerola Folch
 # ==============================================================================
