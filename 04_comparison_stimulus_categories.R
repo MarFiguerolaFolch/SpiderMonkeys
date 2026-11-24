@@ -1,17 +1,15 @@
-
-
 ##TASK DIFFICULTY BY STIMULUS CATEGORY
 # Kruskal-Wallis test on mean sessions per stimulus pair + Dunn post-hoc (BH)
+R
 
-
-# Load required libraries
+#Load required libraries
 library(readxl)
 library(dplyr)
 library(ggplot2)
 library(rstatix)    # For statistical tests
 library(ggpubr)     # For publication-ready plots
 
-# Install FSA if not already installed (for Dunn's test)
+#Install FSA if not already installed (for Dunn's test)
 if (!require(FSA)) {
   install.packages("FSA")
   library(FSA)
@@ -19,12 +17,12 @@ if (!require(FSA)) {
 
 
 
-# 2. DATA ----------------------------------------------------------------------
+#Data
 categories <- c("H", "V", "V + H", "SO", "G")
 category_labels <- c("H" = "Hor", "V" = "Ver", "V + H" = "Hor + Ver",
                      "SO" = "SpO", "G" = "Geo")
 
-# One sheet per category -> one long data frame
+#One sheet per category -> one long data frame
 combined_data <- lapply(categories, function(cat_name) {
   read_excel("Mean_Sessions_Pairs.xlsx", sheet = cat_name) %>%
     setNames(c("Stimulus_Pair", "Mean_Sessions")) %>%
@@ -38,7 +36,7 @@ combined_data <- lapply(categories, function(cat_name) {
 cat("Sample size per category:\n")
 print(table(combined_data$Category))
 
-# 3. DESCRIPTIVE STATISTICS ----------------------------------------------------
+#Descriptive statistics
 desc_stats <- combined_data %>%
   group_by(Category) %>%
   summarise(
@@ -57,13 +55,13 @@ desc_stats <- combined_data %>%
 cat("\nDESCRIPTIVE STATISTICS (highest to lowest median):\n")
 print(desc_stats, n = Inf)
 
-# 4. KRUSKAL-WALLIS TEST -------------------------------------------------------
+#Kruskal-wallis test
 kw <- kruskal_test(combined_data, Mean_Sessions ~ Category)
 
 cat("\nKRUSKAL-WALLIS TEST:\n")
 cat(sprintf("H(%d) = %.3f, p = %.4f, N = %d\n", kw$df, kw$statistic, kw$p, kw$n))
 
-# 5. DUNN'S POST-HOC TEST (only if the overall test is significant) ------------
+#Dunn's post-hoc test (only if overall test is significant)
 if (kw$p < 0.05) {
   dunn_res <- dunnTest(Mean_Sessions ~ Category, data = combined_data,
                        method = "bh")$res %>%       # Benjamini-Hochberg correction
@@ -75,7 +73,7 @@ if (kw$p < 0.05) {
   cat("\nOverall test not significant: no post-hoc test needed.\n")
 }
 
-# 6. FIGURES -------------------------------------------------------------------
+#Figures
 theme_thesis <- theme_minimal(base_size = 12) +
   theme(
     axis.text.x       = element_text(size = 12, color = "black"),
@@ -90,7 +88,7 @@ theme_thesis <- theme_minimal(base_size = 12) +
     panel.grid.minor  = element_blank()
   )
 
-# 6a. Boxplot with individual stimulus pairs; red diamond = median
+#A.Boxplot with individual stimulus pairs; red diamond = median
 p_box <- ggplot(combined_data, aes(Category, Mean_Sessions, fill = Category)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA, width = 0.6) +
   geom_jitter(width = 0.15, height = 0, size = 2.5, alpha = 0.7, color = "gray30") +
@@ -102,7 +100,7 @@ p_box <- ggplot(combined_data, aes(Category, Mean_Sessions, fill = Category)) +
   labs(x = "Stimulus category", y = "Mean sessions to learning criterion") +
   theme_thesis
 
-# 6b. Bar plot: mean ± SEM
+#B.Bar plot: mean ± SEM
 p_bar <- ggplot(desc_stats, aes(Category, Mean, fill = Category)) +
   geom_col(alpha = 0.8, width = 0.7) +
   geom_errorbar(aes(ymin = Mean - SEM, ymax = Mean + SEM),
@@ -119,7 +117,7 @@ p_bar <- ggplot(desc_stats, aes(Category, Mean, fill = Category)) +
 print(p_box)
 print(p_bar)
 
-# 7. SAVE ----------------------------------------------------------------------
+#Save plots and files
 output_dir <- "Category_Analysis_Output"
 dir.create(output_dir, showWarnings = FALSE)
 
