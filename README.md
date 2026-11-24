@@ -1,4 +1,4 @@
-# Statistical analysis of Visual Discrimination and Long-term Memory in Black-handed Spider-Monkeys
+# Black-handed Spider Monkey Data Analysis
 This repository contains R scripts used for the statistical analysis of data collected for my Master's thesis in Applied Ethology and Animal Biology.
 The study investigated visual discrimination of three-dimensional and visual long-term memory in black-handed spider monkeys (Ateles geoffroyi). 
 Nine spider monkeys were tested in a two-choice operant conditioning paradigm using 12 three-dimensional objects arranged into 25 stimulus pairs. Visual long-term memory was assessed using 15 previously learned stimulus pairs after retention intervals of 4, 6, 8, 10, and 12 weeks respectively.
