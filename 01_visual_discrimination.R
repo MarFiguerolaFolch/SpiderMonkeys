@@ -1,23 +1,21 @@
-# ==============================================================================
-# VISUAL DISCRIMINATION PERFORMANCE OF 3D OBJECTS
-# Author: Mar Figuerola Folch
-# ==============================================================================
 
-# 1. LIBRARIES & SETUP ---------------------------------------------------------
+## VISUAL DISCRIMINATION PERFORMANCE OF 3D OBJECTS
+R
+
 library(readxl)
 library(writexl)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-# File path definition
+#File path definition
 file_path <- "1st S mean_LC mean.xlsx"
 
-# Set global ggplot theme defaults
+#Set global ggplot theme defaults
 theme_set(theme_minimal(base_size = 12))
 
-# 2. HELPER FUNCTIONS ----------------------------------------------------------
-# Function to compute summary statistics (Mean, SD, n, SE) across trial columns
+
+#Function to compute summary statistics (Mean, SD, n, SE) across trial columns
 calculate_row_summary <- function(df, trial_cols = 2:10) {
   df %>%
     rowwise() %>%
@@ -31,12 +29,11 @@ calculate_row_summary <- function(df, trial_cols = 2:10) {
     select(Pair_number, Mean, SD, n, SE)
 }
 
-# 3. DATA IMPORT & CLEANING ----------------------------------------------------
-# Import raw sheets
+#Import raw sheets
 first_session_raw   <- read_excel(file_path, sheet = "1st session")
 sessions_crit_raw   <- read_excel(file_path, sheet = "nºs reach criterion")
 
-# Clean Pair_number column
+#Clean Pair_number column
 first_session_clean <- first_session_raw %>%
   mutate(Pair_number = as.numeric(.[[1]])) %>%
   filter(!is.na(Pair_number))
@@ -45,12 +42,12 @@ sessions_crit_clean <- sessions_crit_raw %>%
   mutate(Pair_number = as.numeric(.[[1]])) %>%
   filter(!is.na(Pair_number))
 
-# 4. DATA PROCESSING & SUMMARIZATION -------------------------------------------
-# Compute summary stats for Sheet 1 & Sheet 2 using the helper function
+
+#Compute summary stats for Sheet 1 & Sheet 2 using the helper function
 first_summary    <- calculate_row_summary(first_session_clean)
 sessions_summary <- calculate_row_summary(sessions_crit_clean)
 
-# Assign performance colors cleanly using case_when()
+#Assign performance colors cleanly using case_when()
 first_summary <- first_summary %>%
   mutate(
     Bar_Color = case_when(
@@ -62,9 +59,9 @@ first_summary <- first_summary %>%
     )
   )
 
-# 5. PLOT GENERATION -----------------------------------------------------------
 
-# PLOT 1: First Session Correct Responses
+
+#PLOT 1: First Session Correct Responses
 plot1 <- ggplot(first_summary, aes(x = Pair_number, y = Mean)) +
   geom_col(aes(fill = Bar_Color), color = "black", alpha = 0.85, width = 0.8) +
   geom_errorbar(
@@ -89,7 +86,7 @@ plot1 <- ggplot(first_summary, aes(x = Pair_number, y = Mean)) +
     panel.grid.minor = element_blank()
   )
 
-# PLOT 2: Sessions to Reach Learning Criterion
+#PLOT 2: Sessions to Reach Learning Criterion
 plot2 <- ggplot(sessions_summary, aes(x = Pair_number, y = Mean)) +
   geom_col(fill = "darkgreen", color = "black", alpha = 0.85, width = 0.8) +
   geom_errorbar(
@@ -123,17 +120,16 @@ plot2 <- ggplot(sessions_summary, aes(x = Pair_number, y = Mean)) +
     panel.grid.minor = element_blank()
   )
 
-# Display plots in RStudio viewer
+#Display plots in RStudio viewer
 print(plot1)
 print(plot2)
 
-# 6. EXPORTING PLOTS & DATA ----------------------------------------------------
 
-# Save high-resolution publication figures
+#Save high-resolution publication figures
 ggsave("first_session_performance.png", plot1, width = 10, height = 6, dpi = 300)
 ggsave("sessions_to_criterion.png", plot2, width = 10, height = 6, dpi = 300)
 
-# Format summary tables for export
+#Format summary tables for export
 first_session_results <- first_summary %>%
   transmute(
     Pair_Number = Pair_number,
@@ -152,7 +148,7 @@ sessions_criterion_results <- sessions_summary %>%
     Sample_Size = n
   )
 
-# Export to single formatted Excel workbook
+#Export to single formatted Excel workbook
 write_xlsx(
   list(
     "First_Session_Summary" = first_session_results,
@@ -161,11 +157,11 @@ write_xlsx(
   path = "spider_monkey_cognitive_results.xlsx"
 )
 
-# Export individual CSV files
+#Export individual CSV files
 write.csv(first_session_results, "first_session_results.csv", row.names = FALSE)
 write.csv(sessions_criterion_results, "sessions_to_criterion_results.csv", row.names = FALSE)
 
-# Print Summary Statistics to Console
+#Print Summary Statistics to Console
 cat("\n==========================================\n")
 cat("       SUMMARY DIAGNOSTICS & RESULTS      \n")
 cat("==========================================\n")
