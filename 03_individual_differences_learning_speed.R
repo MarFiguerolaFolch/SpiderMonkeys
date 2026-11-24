@@ -1,9 +1,6 @@
-# ==============================================================================
-# INDIVIDUAL DIFFERENCES IN LEARNING SPEED
-# Linear mixed model: Sessions ~ Monkey + (1 | Pair_number)
-# ==============================================================================
+##INDIVIDUAL DIFFERENCES IN LEARNING SPEED
+R
 
-# 1. SETUP ---------------------------------------------------------------------
 library(readxl)
 library(tidyverse)
 library(rstatix)
@@ -11,7 +8,7 @@ library(lme4)
 library(lmerTest)
 library(emmeans)
 
-# 2. DATA ----------------------------------------------------------------------
+#File path
 data <- read_excel("NumberSessions_StimulusPair.xlsx",
                    sheet = "Session_StimulusPair")
 colnames(data)[1] <- "Pair_number"
@@ -26,7 +23,7 @@ long_data <- data %>%
   mutate(Pair_number = factor(Pair_number),
          Sessions    = as.numeric(Sessions))
 
-# 3. DESCRIPTIVE STATISTICS ----------------------------------------------------
+#Descritptive statistics
 desc_stats <- long_data %>%
   group_by(Monkey) %>%
   summarise(
@@ -44,13 +41,13 @@ desc_stats <- long_data %>%
 cat("\nDESCRIPTIVE STATISTICS (fastest to slowest):\n")
 print(desc_stats, n = Inf)
 
-# Order monkeys from fastest to slowest (used by all plots; desc_stats is
-# already sorted by Mean, so its row order defines the factor levels)
+#Order monkeys from fastest to slowest (used by all plots; desc_stats is
+#already sorted by Mean, so its row order defines the factor levels)
 monkey_levels <- desc_stats$Monkey
 long_data  <- long_data  %>% mutate(Monkey = factor(Monkey, levels = monkey_levels))
 desc_stats <- desc_stats %>% mutate(Monkey = factor(Monkey, levels = monkey_levels))
 
-# 4. LINEAR MIXED MODEL --------------------------------------------------------
+#Linear mixed model
 lmm_model <- lmer(Sessions ~ Monkey + (1 | Pair_number),
                   data = long_data, REML = TRUE)
 
@@ -65,7 +62,7 @@ cat(sprintf("\nF(%d, %.1f) = %.2f, p = %.4f\n",
             lmm_anova$NumDF[1], lmm_anova$DenDF[1],
             lmm_anova$`F value`[1], lmm_anova$`Pr(>F)`[1]))
 
-# 5. POST-HOC TESTS (Tukey-adjusted) -------------------------------------------
+#Post-hoc tests (Turkey-adjusted)
 emm <- emmeans(lmm_model, pairwise ~ Monkey, adjust = "tukey")
 
 contrasts_df <- as.data.frame(summary(emm$contrasts, infer = TRUE)) %>%
@@ -74,7 +71,7 @@ contrasts_df <- as.data.frame(summary(emm$contrasts, infer = TRUE)) %>%
 cat("\nALL PAIRWISE CONTRASTS (Tukey-adjusted):\n")
 print(contrasts_df, digits = 3)
 
-# Significant contrasts, split into the two monkeys involved
+#Significant contrasts, split into the two monkeys involved
 sig_contrasts <- contrasts_df %>%
   filter(p.value < 0.05) %>%
   separate(contrast, into = c("m1", "m2"), sep = " - ", remove = FALSE)
@@ -83,26 +80,9 @@ cat("\nSIGNIFICANT CONTRASTS (adjusted p < 0.05):\n")
 print(sig_contrasts, digits = 3)
 
 significant_monkeys <- unique(c(sig_contrasts$m1, sig_contrasts$m2))
-min_p_nonsig <- contrasts_df %>%
-  filter(p.value >= 0.05) %>%
-  summarise(min(p.value)) %>%
-  pull()
 
-# Ready-to-paste sentences for the Results section
-cat("\nTEXT FOR RESULTS:\n")
-for (i in seq_len(nrow(sig_contrasts))) {
-  with(sig_contrasts[i, ], {
-    faster <- ifelse(estimate < 0, m1, m2)
-    slower <- ifelse(estimate < 0, m2, m1)
-    cat(sprintf(
-      "%s reached the learning criterion significantly faster than %s (estimate = %.2f sessions, SE = %.2f, t(%.1f) = %.2f, p = %.3f).\n",
-      faster, slower, abs(estimate), SE, df, abs(t.ratio), p.value))
-  })
-}
-cat(sprintf("No other pairwise differences were significant (all adjusted p > %.3f).\n",
-            min_p_nonsig))
 
-# 6. FIGURES -------------------------------------------------------------------
+#Figures
 theme_thesis <- theme_minimal(base_size = 12) +
   theme(
     axis.text         = element_text(size = 11, color = "black"),
@@ -115,8 +95,7 @@ theme_thesis <- theme_minimal(base_size = 12) +
     panel.grid.major  = element_line(color = "gray90", linewidth = 0.3)
   )
 
-# 6a. Boxplot: asterisk above monkeys involved in a significant contrast
-asterisk_box <- long_data %>%
+#A.Boxplot: asterisk above monkeys involved in a significant contrast asterisk_box <- long_data %>%
   group_by(Monkey) %>%
   summarise(y = max(Sessions, na.rm = TRUE) + 1, .groups = "drop") %>%
   filter(Monkey %in% significant_monkeys)
@@ -132,8 +111,8 @@ p_box <- ggplot(long_data, aes(Monkey, Sessions, fill = Monkey)) +
   labs(x = "Individual", y = "Sessions to reach learning criterion") +
   theme_thesis
 
-# 6b. Bar plot (mean ± SEM) with a bracket for every significant contrast.
-#     Brackets are stacked above the tallest bar, so no positions are hard-coded.
+#B.Bar plot (mean ± SEM) with a bracket for every significant contrast.
+#Brackets are stacked above the tallest bar, so no positions are hard-coded.
 bracket_step <- 0.6
 bracket_tick <- 0.15
 y_base <- max(desc_stats$Mean + desc_stats$SEM) + 0.4
@@ -167,7 +146,7 @@ p_bar <- ggplot(desc_stats, aes(Monkey, Mean, fill = Monkey)) +
   theme_thesis +
   theme(axis.title.y = element_text(size = 11, hjust = 0))
 
-# Save (PDF + PNG) and display
+#Save (PDF + PNG) and display
 save_plot <- function(plot, name) {
   ggsave(paste0(name, ".pdf"), plot, width = 8, height = 6)
   ggsave(paste0(name, ".png"), plot, width = 8, height = 6, dpi = 300)
@@ -177,18 +156,9 @@ save_plot(p_bar, "MeanSEM_LearningSpeed")
 print(p_box)
 print(p_bar)
 
-# 7. MODEL DIAGNOSTICS ---------------------------------------------------------
-# Saved to a PDF so it does not add blank pages to the RStudio Plots pane
-pdf("Model_Diagnostics.pdf", width = 10, height = 5)
-par(mfrow = c(1, 2))
-plot(fitted(lmm_model), resid(lmm_model),
-     xlab = "Fitted values", ylab = "Residuals", main = "Residuals vs fitted")
-abline(h = 0, lty = 2)
-qqnorm(resid(lmm_model)); qqline(resid(lmm_model))
-dev.off()
 
-# 8. FRIEDMAN TEST (non-parametric check; needs complete data) -----------------
-# Drops any monkey with missing values (Nena) instead of hard-coding the name
+#Friedman test (robustness check)
+# Drops any monkey with missing values, needs complete blocks 
 friedman_result <- data %>%
   dplyr::select(where(~ !anyNA(.x))) %>%
   pivot_longer(-Pair_number, names_to = "Monkey", values_to = "Sessions") %>%
@@ -198,6 +168,6 @@ friedman_result <- data %>%
 cat("\nFRIEDMAN TEST (complete-data monkeys only):\n")
 print(friedman_result)
 
-# 9. SAVE TABLES ---------------------------------------------------------------
+#Save tables
 write.csv(desc_stats,    "Monkey_Results.csv",             row.names = FALSE)
 write.csv(contrasts_df,  "Pairwise_Contrasts_Tukey.csv",   row.names = FALSE)
