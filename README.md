@@ -11,7 +11,7 @@ This first experiment investigated the ability of spider monkeys to visually dis
 
 All nine individuals successfully learned to discriminate all 25 stimulus pairs, and showed a progressive decrease in the number of sessions required to reach the learning criterion across the task.
 
-An exploratory analysis found no systematic differences in learning speed nor discrimination performance between stimulus categories.
+An exploratory analysis found no systematic differences in learning speed nor discrimination performance between stimulus categories (Horizontal, Vertical, Horizontal+Vertical, Spatial Orientation, Geometry).
 
 Experiment 2 - Visual long-term memory
 The second experiment assessed memory for previously learned visual stimulus-reward associations after the retention intervals.
@@ -26,6 +26,9 @@ Analyses first-trial performance after the retention intervals.
 
 3. Individual differences (03_individual_differences_learning_speed.R)
 Analyses interindividual differences in learning speed using a linear mixed-effects model fitted with restricted maximum likelihood estimation. Interindividual variation in test performance can arise from factors such as age, sex, sensory capacities, and motivation.  
+
+4. Stimulus category comparison (04_comparison_stimulus_category.R)
+Exploratory analysis of whether task difficulty differs between stimulus categories.
 
 The original Excel datasets are not included in this repository.
 
